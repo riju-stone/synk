@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"gortc.io/stun"
 )
@@ -80,7 +79,6 @@ func QueryServer(ctx context.Context, server string, ipv6 bool) (string, error) 
 
 		var xorAddr stun.XORMappedAddress
 		if err := xorAddr.GetFrom(res.Message); err == nil {
-			fmt.Print("XOR Mapped Address: ", xorAddr.IP.String(), "\n")
 			return xorAddr.IP.String(), nil
 		} else {
 			var mappedAddr stun.MappedAddress
@@ -130,7 +128,6 @@ func QueryServerList(ctx context.Context, ipv6 bool, quorum uint) (string, error
 	for range serverCount {
 		select {
 		case resp := <-peerResp:
-			fmt.Println("STUN Server Response: ", resp.server, " -> ", resp.res)
 			resultCount[resp.res]++
 			if resultCount[resp.res] >= quorum {
 				return resp.res, nil
@@ -148,9 +145,6 @@ func QueryServerList(ctx context.Context, ipv6 bool, quorum uint) (string, error
 	if len(resultCount) < int(quorum) {
 		return "", errors.New("not enough STUN Servers to reach quorum")
 	}
-
-	fmt.Println("STUN Server Errors: ", errorMap)
-	fmt.Println("STUN Server Results: ", resultMap)
 
 	return "", nil
 }
